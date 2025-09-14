@@ -4,6 +4,8 @@ type AdminLayoutProps = {
   children: React.ReactNode;
 };
 
+export const dynamic = "force-dynamic";
+
 const AdminLayout = ({ children }: Readonly<AdminLayoutProps>) => {
   return (
     <>

@@ -5,17 +5,69 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import db from "@/db/db";
+import { formatCurrency, formatNumber } from "@/db/formatter";
 import React from "react";
 
-function getSalesData() {}
+async function getSalesData() {
+  const data = await db.Order?.aggregate({
+    _sum: { pricePaidInCents: true },
+    _count: true,
+  });
 
-const AdminPage = () => {
+  return {
+    amount: (data?._sum?.pricePaidInCents || 0) / 100,
+    numberOfSales: data?._count,
+  };
+}
+
+async function getUsersData() {
+  const [userCount, orderCount] = await Promise.all([
+    db.User?.count(),
+    db.Order?.aggregate({
+      _sum: { pricePaidInCents: true },
+    }),
+  ]);
+  return {
+    userCount,
+    avarageValuePerUser:
+      userCount === 0
+        ? 0
+        : (orderCount?._sum?.pricePaidInCents || 0) / userCount / 100,
+  };
+}
+
+async function getProductsData() {
+  const [activeCount, inActiveCount] = await Promise.all([
+    db.Product?.count({ where: { isActive: true } }),
+    db.Product?.count({ where: { isActive: false } }),
+  ]);
+  return { activeCount, inActiveCount };
+}
+
+const AdminPage = async () => {
+  const [userData, getData, productData] = await Promise.all([
+    getUsersData(),
+    getSalesData(),
+    getProductsData(),
+  ]);
+
   return (
     <div className="grid  px-2 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <DashboardCard
-        title="Total Revenue"
-        desc="Total revenue generated"
-        price="2222$"
+        title="Sales"
+        desc={`${formatNumber(getData.numberOfSales)} Orders`}
+        body={formatCurrency(getData.amount)}
+      />
+      <DashboardCard
+        title="Costumers"
+        desc={`${formatNumber(userData.avarageValuePerUser)} `}
+        body={formatCurrency(userData.userCount)}
+      />
+      <DashboardCard
+        title="Costumers"
+        desc={`${formatNumber(productData.inActiveCount)} `}
+        body={formatNumber(productData.activeCount)}
       />
     </div>
   );
@@ -24,10 +76,10 @@ const AdminPage = () => {
 type DashboardCardProps = {
   title: string;
   desc: string;
-  price: string;
+  body: string | number;
 };
 
-export function DashboardCard({ title, desc, price }: DashboardCardProps) {
+export function DashboardCard({ title, desc, body }: DashboardCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -35,7 +87,7 @@ export function DashboardCard({ title, desc, price }: DashboardCardProps) {
         <CardDescription>{desc}</CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="text-3xl font-bold">{price}</p>
+        <p className="text-3xl font-bold">{body}</p>
       </CardContent>
     </Card>
   );
