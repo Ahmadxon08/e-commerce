@@ -16,7 +16,7 @@ const AdminLayout = ({ children }: Readonly<AdminLayoutProps>) => {
         <NavLink href="/admin/orders">Sales</NavLink>
       </Nav>
 
-      <div className="container my-6">{children}</div>
+      <div className="px-4 my-6">{children}</div>
     </>
   );
 };
