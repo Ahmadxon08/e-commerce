@@ -45,6 +45,8 @@ const ProductForm = () => {
           <Label htmlFor="image">File</Label>
           <Input type="file" placeholder="image" id="image" required />
         </div>
+
+        <Button type="submit">Add Product</Button>
       </form>
     </div>
   );
