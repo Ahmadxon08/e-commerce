@@ -24,17 +24,19 @@ function ProductsTable() {
   return (
     <>
       <Table>
-        <TableRow>
-          <TableHead className="w-0">
-            <span className="sr-only"> Awaiable only for Purchase</span>
-          </TableHead>
-          <TableHead>Names</TableHead>
-          <TableHead>Orders</TableHead>
-          <TableHead>Prices</TableHead>
-          <TableHead className="w-0">
-            <span className="sr-only"> Actions</span>
-          </TableHead>
-        </TableRow>
+        <thead>
+          <TableRow>
+            <TableHead className="w-0">
+              <span className="sr-only"> Awaiable only for Purchase</span>
+            </TableHead>
+            <TableHead>Names</TableHead>
+            <TableHead>Orders</TableHead>
+            <TableHead>Prices</TableHead>
+            <TableHead className="w-0">
+              <span className="sr-only"> Actions</span>
+            </TableHead>
+          </TableRow>
+        </thead>
       </Table>
     </>
   );
