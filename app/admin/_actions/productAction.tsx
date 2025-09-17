@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { deleteProduct, toggleIsAvailableForPurchase } from "./products";
+import { useRouter } from "next/navigation";
 
 export function ActiveToggleDropdown({
   id,
@@ -12,6 +13,7 @@ export function ActiveToggleDropdown({
   isAvailableForPurchase: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
+  const rounter = useRouter();
 
   return (
     <DropdownMenuItem
@@ -19,6 +21,7 @@ export function ActiveToggleDropdown({
       onClick={() => {
         startTransition(async () => {
           await toggleIsAvailableForPurchase(id, !isAvailableForPurchase);
+          rounter.refresh();
         });
       }}
     >
@@ -36,13 +39,16 @@ export function DeleteProductButton({
 }) {
   const [isPending, startTransition] = useTransition();
 
+  const rounter = useRouter();
+
   return (
     <DropdownMenuItem
-      className="text-red-600"
+      className="text-red-600 hover:bg-red-70"
       disabled={disabled || isPending}
       onClick={() => {
         startTransition(async () => {
           await deleteProduct(id);
+          rounter.refresh();
         });
       }}
     >
