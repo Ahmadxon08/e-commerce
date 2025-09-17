@@ -5,27 +5,39 @@ import z from "zod";
 import fs from "fs/promises";
 import { redirect } from "next/navigation";
 
-const ProductFormSchema = z.instanceof(File, {
-  message: "Please upload a file.",
-});
+// const ProductFormSchema = z.instanceof(File, {
+//   message: "Please upload a file.",
+// });
 
-const ImageSchema = ProductFormSchema.refine(
-  (file) => file.type.startsWith("image/"),
-  {
-    message: "Uploaded file must be an image.",
-  }
-);
+// const ImageSchema = ProductFormSchema.refine(
+//   (file) => file.type.startsWith("image/"),
+//   {
+//     message: "Uploaded file must be an image.",
+//   }
+// );
 
 const addSchema = z.object({
   name: z.string().min(1),
-  priceInCents: z.coerce.number().int().min(0),
+  priceInCents: z.coerce
+    .number({
+      message: "Price is required.",
+    })
+    .int("Price must be an integer.")
+    .min(0, { message: "Price cannot be less than 0." }),
   description: z.string().min(1),
-  file: ProductFormSchema.refine((file) => file.size > 0, {
-    message: "File size must be greater than 0 bytes.",
-  }),
-  image: ImageSchema.refine((file) => file.size > 0, {
-    message: "File size must be greater than 0 bytes.",
-  }),
+  file: z
+    .instanceof(File, { message: "Please upload a file." })
+    .refine((file) => file.size > 0, {
+      message: "File size must be greater than 0 bytes.",
+    }),
+  image: z
+    .instanceof(File, { message: "Please upload an image." })
+    .refine((file) => file.size > 0, {
+      message: "File size must be greater than 0 bytes.",
+    })
+    .refine((file) => file.type.startsWith("image/"), {
+      message: "Uploaded file must be an image.",
+    }),
 });
 
 export async function addProduct(prevState: unknown, formData: FormData) {
@@ -63,6 +75,7 @@ export async function addProduct(prevState: unknown, formData: FormData) {
 
   await db.product.create({
     data: {
+      isAvailableForPurchase: false,
       name: validData.name,
       description: validData.description,
       priceInCents: validData.priceInCents,
