@@ -28,34 +28,48 @@ const addSchema = z.object({
   }),
 });
 
-export async function addProduct(formData: FormData) {
-  const result = addSchema.safeParse(Object.fromEntries(formData));
+export async function addProduct(prevState: unknown, formData: FormData) {
+  const data = {
+    name: formData.get("name"),
+    priceInCents: formData.get("priceInCents"),
+    description: formData.get("description"),
+    file: formData.get("file") as File,
+    image: formData.get("image") as File,
+  };
+
+  for (const [key, value] of formData.entries()) {
+    console.log(key, value);
+  }
+
+  const result = addSchema.safeParse(data);
   if (!result.success) {
     const { fieldErrors } = result.error.flatten();
+    console.log("Zod errors:", fieldErrors);
     return fieldErrors;
   }
-  const data = result.data;
+
+  const validData = result.data;
 
   await fs.mkdir("products", { recursive: true });
-  const filePath = `products/${crypto.randomUUID()}-${data.file.name}`;
-  await fs.writeFile(filePath, Buffer.from(await data.file.arrayBuffer()));
+  const filePath = `products/${crypto.randomUUID()}-${validData.file.name}`;
+  await fs.writeFile(filePath, Buffer.from(await validData.file.arrayBuffer()));
 
   await fs.mkdir("public/products", { recursive: true });
-  const imagePath = `products/${crypto.randomUUID()}-${data.image.name}`;
+  const imagePath = `/products/${crypto.randomUUID()}-${validData.image.name}`;
   await fs.writeFile(
     `public${imagePath}`,
-    Buffer.from(await data.image.arrayBuffer())
+    Buffer.from(await validData.image.arrayBuffer())
   );
 
-  await db.Product.create({
+  await db.product.create({
     data: {
-      name: data.name,
-      description: data.description,
-      priceInCents: data.priceInCents,
+      name: validData.name,
+      description: validData.description,
+      priceInCents: validData.priceInCents,
       filePath,
       imagePath,
     },
   });
 
-  redirect("/admin/products");
+  redirect("/admin/product");
 }

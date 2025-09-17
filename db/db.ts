@@ -1,7 +1,7 @@
-import { PrismaClient } from "@prisma/client/extension";
+import { PrismaClient } from "@prisma/client";
 
 const prismaClientSingleton = () => {
-  return PrismaClient;
+  return new PrismaClient();
 };
 
 declare global {
