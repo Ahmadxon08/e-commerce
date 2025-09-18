@@ -8,10 +8,14 @@ import { formatCurrency } from "@/db/formatter";
 import { useActionState, useState } from "react";
 import { addProduct } from "../../_actions/products";
 import { useFormStatus } from "react-dom";
+import { Product } from "@prisma/client";
+import Image from "next/image";
 
-const ProductForm = () => {
+const ProductForm = ({ product }: { product?: Product | null }) => {
   const [error, action] = useActionState(addProduct, {});
-  const [priceInCents, setPriceInCents] = useState<number>(0);
+  const [priceInCents, setPriceInCents] = useState<number | undefined>(
+    product?.priceInCents
+  );
 
   return (
     <div>
@@ -24,6 +28,7 @@ const ProductForm = () => {
             id="name"
             name="name"
             required
+            defaultValue={product?.name || ""}
           />
         </div>
         {error.name && <p className="text-sm text-red-600">{error.name}</p>}
@@ -36,6 +41,7 @@ const ProductForm = () => {
             id="priceInCents"
             name="priceInCents"
             required
+            defaultValue={product?.priceInCents || ""}
             value={priceInCents}
             onChange={(e) => setPriceInCents(Number(e.target.value) || 0)}
           />
@@ -54,6 +60,7 @@ const ProductForm = () => {
             name="description"
             id="description"
             required
+            defaultValue={product?.description || ""}
           />
         </div>
         {error.description && (
@@ -67,9 +74,13 @@ const ProductForm = () => {
             placeholder="file"
             name="file"
             id="file"
-            required
+            required={product === null}
           />
         </div>
+
+        {product !== null && (
+          <p className="text-sm text-muted-foreground">{product?.filePath}.</p>
+        )}
         {error.file && <p className="text-sm text-red-600">{error.file}</p>}
         <div className=" space-y-2">
           <Label htmlFor="image">File</Label>
@@ -78,9 +89,17 @@ const ProductForm = () => {
             placeholder="image"
             id="image"
             name="image"
-            required
+            required={product === null}
           />
         </div>
+        {product !== null && (
+          <Image
+            src={product.imagePath} // now guaranteed string
+            alt="product image "
+            width={200}
+            height={200}
+          />
+        )}
         {error.image && <p className="text-sm text-red-600">{error.image}</p>}
         <SubmitButton />
       </form>

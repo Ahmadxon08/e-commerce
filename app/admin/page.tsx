@@ -10,7 +10,7 @@ import { formatCurrency, formatNumber } from "@/db/formatter";
 import React from "react";
 
 async function getSalesData() {
-  const data = await db.Order?.aggregate({
+  const data = await db.order?.aggregate({
     _sum: { pricePaidInCents: true },
     _count: true,
   });
@@ -23,8 +23,8 @@ async function getSalesData() {
 
 async function getUsersData() {
   const [userCount, orderCount] = await Promise.all([
-    db.User?.count(),
-    db.Order?.aggregate({
+    db.user?.count(),
+    db.order?.aggregate({
       _sum: { pricePaidInCents: true },
     }),
   ]);
@@ -39,8 +39,8 @@ async function getUsersData() {
 
 async function getProductsData() {
   const [activeCount, inActiveCount] = await Promise.all([
-    db.Product?.count({ where: { isActive: true } }),
-    db.Product?.count({ where: { isActive: false } }),
+    db.product?.count({ where: { isAvailableForPurchase: true } }),
+    db.product?.count({ where: { isAvailableForPurchase: false } }),
   ]);
   return { activeCount, inActiveCount };
 }
