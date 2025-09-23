@@ -121,7 +121,7 @@ export async function updatedProduct(
 
   if (product === null) return notFound();
 
-  if (validData.file !== null && validData.file.size > 0) {
+  if (validData.file && validData.file.size > 0) {
     await fs.unlink(product.filePath);
     const filePath = `products/${crypto.randomUUID()}-${validData.file.name}`;
     await fs.writeFile(
@@ -130,10 +130,10 @@ export async function updatedProduct(
     );
   }
   await fs.mkdir("public/products", { recursive: true });
-  const imagePath = `/products/${crypto.randomUUID()}-${validData.image.name}`;
+  const imagePath = `/products/${crypto.randomUUID()}-${validData?.image.name}`;
   await fs.writeFile(
     `public${imagePath}`,
-    Buffer.from(await validData.image.arrayBuffer())
+    Buffer.from(await validData?.image.arrayBuffer())
   );
 
   await db.product.create({

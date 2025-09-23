@@ -92,10 +92,10 @@ const ProductForm = ({ product }: { product?: Product | null }) => {
             required={product === null}
           />
         </div>
-        {product !== null && (
+        {product !== null && product?.imagePath && (
           <Image
             src={product.imagePath} // now guaranteed string
-            alt="product image "
+            alt="product image"
             width={200}
             height={200}
           />
