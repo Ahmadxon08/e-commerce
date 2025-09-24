@@ -11,7 +11,7 @@ const HomeLayout = ({ children }: Readonly<AdminLayoutProps>) => {
     <>
       <Nav>
         <NavLink href="/">Dashboard</NavLink>
-        <NavLink href="/product">Products</NavLink>
+        <NavLink href="/products">Products</NavLink>
         <NavLink href="/orders">My orders</NavLink>
       </Nav>
 
