@@ -5,24 +5,28 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import ProductCard, { SkeletonGray } from "@/components/ProductCard";
+import { cache } from "@/lib/cache";
+const getMostPopularProducts = cache(
+  () => {
+    wait(1000);
+    return db.product.findMany({
+      where: { isAvailableForPurchase: true },
+      orderBy: { orders: { _count: "desc" } },
+      take: 6,
+    });
+  },
+  ["/", "getMostPopularProducts"],
+  { revalidate: 60 * 60 * 24 }
+);
 
-async function getMostPopularProducts() {
-  await wait(1000);
-  return db.product.findMany({
-    where: { isAvailableForPurchase: true },
-    orderBy: { orders: { _count: "desc" } },
-    take: 6,
-  });
-}
-
-async function getNewProducts() {
-  await wait(2000);
+const getNewProducts = cache(() => {
+  wait(2000);
   return db.product.findMany({
     where: { isAvailableForPurchase: true },
     orderBy: { createdAt: "desc" },
     take: 6,
   });
-}
+}, ["/", "getNewProducts"]);
 
 function wait(duration: number) {
   return new Promise((resolve) => setTimeout(resolve, duration));
