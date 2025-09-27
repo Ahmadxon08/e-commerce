@@ -35,7 +35,7 @@ CREATE TABLE "Order" (
 -- CreateTable
 CREATE TABLE "DownloadVerification" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "exrpiresAt" DATETIME NOT NULL,
+    "expiresAt" DATETIME NOT NULL,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "productId" TEXT NOT NULL,
     CONSTRAINT "DownloadVerification_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Product" ("id") ON DELETE CASCADE ON UPDATE CASCADE

@@ -45,9 +45,9 @@ model Order {
 }
 
 model DownloadVerification {
-  id         String   @id @default(uuid())
-  exrpiresAt DateTime
-  createdAt  DateTime @default(now())
-  productId  String
-  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id        String   @id @default(uuid())
+  expiresAt DateTime @default(now()) // ✅ default qo‘shdik
+  createdAt DateTime @default(now())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
